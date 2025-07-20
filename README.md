@@ -1,4 +1,16 @@
-# auth-service
+# Spring Boot Application with Gradle
+
+This project is a Spring Boot application built with Gradle.
+
+## 🚀 Running the Application
+
+To start the application, open your terminal and navigate to the root directory of the project.
+
+### For Unix/macOS:
+
+```bash
+./gradlew bootRun
+```
 
 ### Things I've ran into
 
