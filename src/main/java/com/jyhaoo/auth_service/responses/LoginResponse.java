@@ -7,9 +7,9 @@ import lombok.Setter;
 @Setter
 public class LoginResponse {
     private String token;
-    private String expiration;
+    private long expiration;
 
-    public LoginResponse(String token, String expiration) {
+    public LoginResponse(String token, long expiration) {
         this.token = token;
         this.expiration = expiration;
     }

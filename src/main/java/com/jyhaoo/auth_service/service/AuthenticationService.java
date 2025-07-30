@@ -1,23 +1,21 @@
 package com.jyhaoo.auth_service.service;
 
-import com.jyhaoo.auth_service.dto.RegisterUserDto;
-import com.jyhaoo.auth_service.dto.VerifyUserDto;
-import com.jyhaoo.auth_service.model.User;
-import com.jyhaoo.auth_service.service.email.EmailService;
-import com.jyhaoo.auth_service.repository.UserRepository;
-
-import jakarta.mail.MessagingException;
+import java.time.LocalDateTime;
+import java.util.Optional;
+import java.util.Random;
 
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.util.Optional;
-import java.util.Random;
-
 import com.jyhaoo.auth_service.dto.LoginUserDto;
+import com.jyhaoo.auth_service.dto.RegisterUserDto;
+import com.jyhaoo.auth_service.dto.VerifyUserDto;
+import com.jyhaoo.auth_service.model.User;
+import com.jyhaoo.auth_service.repository.UserRepository;
+
+import jakarta.mail.MessagingException;
 
 @Service
 public class AuthenticationService {
@@ -73,14 +71,14 @@ public class AuthenticationService {
         Optional<User> optionalUser = userRepository.findByEmail(verifyUserDto.getEmail());
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
-            if (user.getVerificationCodeExpiry().isBefore(LocalDateTime.now())) {
+            if (user.getVerificationExpiry().isBefore(LocalDateTime.now())) {
                 throw new RuntimeException("Verification code has expired");
             }
 
             if (user.getVerificationCode().equals(verifyUserDto.getVerificationCode())) {
                 user.setEnabled(true);
                 user.setVerificationCode(null);
-                user.setVerificationCodeExpiry(null);
+                user.setVerificationExpiry(null);
                 userRepository.save(user);
             } else {
                 throw new RuntimeException("Invalid verification code");
@@ -98,7 +96,7 @@ public class AuthenticationService {
                 throw new RuntimeException("User account is already verified");
             }
             user.setVerificationCode(generateVerificationCode());
-            user.setVerificationCodeExpiry(LocalDateTime.now().plusHours(1));
+            user.setVerificationExpiry(LocalDateTime.now().plusHours(1));
             sendVerificationEmail(user);
             userRepository.save(user);
         } else {
